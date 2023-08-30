@@ -8,7 +8,7 @@ const config: HardhatUserConfig = {
     aster: {
       url: "https://evm.astar.network/",
       chainId: 592,
-      accounts: [process.env.PRIVATE_KEY || ""]
+      accounts: [`0x${process.env.RCP_PRIVATE_KEY}`]
     }
   }
 };

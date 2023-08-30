@@ -3,27 +3,48 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
+// 機能要件
+// タスクを作成する機能
+
+
+// タスクを完了する機能
+// タスクがあるかチェック
+// タスクが完了しているか未完了かチェック
+
+// 報酬を与える機能
+// 報酬を与える際に親アカウントに残高が十分にあるかチェック
+// ユーザーは報酬を得たことをTodoAppのモーダルかポップアップか何かで知る。
+
+
+// 非機能要件
+// 速度は早ければ早いほどいいが、ポリゴンのチェーンの速度がどうなっているかわからないので未定義
+// また何かあれば追記すること
+
+
+/// @notice Explain to an end user what this does
+/// @dev Explain to a developer any extra details
+/// @param Documents a parameter just like in doxygen (must be followed by parameter name)
+
 contract TaskToken is ERC20 {
     address public admin;
-    constructor(uint256 initialSupply) ERC20("TaskToken", "TK") {
+    uint8 public decimals = 18;
+    constructor() ERC20("TaskToken", "TK") {
         admin = msg.sender;
-        _mint(msg.sender, initialSupply);
+        _mint(msg.sender, 1000000 * 10 ** decimals());
     }
 
     function rewardTaskCompletion(address worker, uint256 amount) external {
-    require(msg.sender == admin, "only admin can reward tokens");
-    _mint(worker, amount);
+        require(msg.sender == admin, "only admin can reward tokens");
+        _mint(worker, amount);
     }
 }
 
 
-// 機能要件
-// タスクが完了したら、報酬を与える
 
 contract TaskManagement {
     uint public taskCount = 0;
     event Created(uint id, string content);
-    event IsCompleted(uint id, bool completed);
+    event TaskCompleted(uint id);
 
     // struct データの型を決めておく
     struct Task{
@@ -35,53 +56,50 @@ contract TaskManagement {
     // mapping 辞書のインスタンス化みたいなもの
     mapping(uint => Task) public maptasks;
 
+    //constructor スマートコントラクトの初期設定を行う
+    constructor (address _taskToken) public {
+        taskToken = TaskToken(_taskToken);
+        createTask("buy flowersssssssssss");
+    }
 
     function create (string memory _content) public {
         taskCount++;
         maptasks[taskCount] = Task(taskCount, _content, false);
+        // イベントの発火
         emit Created(taskCount, _content);
     }
 
-        //constructor スマートコントラクトの初期設定を行う
-    constructor () public {
-        createTask("buy flowers");
-    }
-
     function complete(uint _id, address _worker) public {
-        Task memory _task = maptasks[_id];
-        require(_task.isCompleted == true, "you haven't finished this task yet");
+        require(_id < taskCount, "task is not valid");
+        require(!task.isCompleted, "Task is already completed!!");
+        
+        tasks[_id].isCompleted = true;
+        taskToken.rewardTaskCompletion(_worker, 1)
+        emit TaskCompleted(_id)
+        
     }
 
-
 }
-// タスクがあるかチェック
-// タスクが完了しているか未完了かチェック
-// 報酬を与える際に親アカウントに残高が十分にあるかチェック
 
 
-// 非機能要件
-//タスクが正確に完了した時のみ、報酬がもらえる。タスクが完了していなかったらエラーを吐く。
-// ユーザーは報酬を得たことをTodoAppのモーダルかポップアップか何かで知る。
-// 速度は早ければ早いほどいいが、ポリゴンのチェーンの速度がどうなっているかわからないので未定義
 
+// pragma solidity ^0.8.0;
 
-pragma solidity ^0.8.0;
+// import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-
-contract TaskToken is ERC20 {
-    address public admin;
+// contract TaskToken is ERC20 {
+//     address public admin;
     
-    constructor() ERC20("TaskToken", "TSK") {
-        admin = msg.sender;
-        _mint(msg.sender, 1000000 * 10 ** decimals());  // 初期供給
-    }
+//     constructor() ERC20("TaskToken", "TSK") {
+//         admin = msg.sender;
+//         _mint(msg.sender, 1000000 * 10 ** decimals());  // 初期供給
+//     }
 
-    function rewardTaskCompletion(address worker, uint256 amount) external {
-        require(msg.sender == admin, "only admin can reward tokens");
-        _mint(worker, amount);
-    }
-}
+//     function rewardTaskCompletion(address worker, uint256 amount) external {
+//         require(msg.sender == admin, "only admin can reward tokens");
+//         _mint(worker, amount);
+//     }
+// }
 
 // contract TaskContract {
 //     TaskToken public token;
