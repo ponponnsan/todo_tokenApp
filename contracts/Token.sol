@@ -34,7 +34,7 @@ contract TaskToken is ERC20 {
     }
 
     function rewardTaskCompletion(address worker, uint256 amount) external {
-        require(msg.sender == admin, "only admin can reward tokens");
+        require(msg.sender == admin, "00000only admin can reward tokens");
         _mint(worker, amount);
     }
 }
